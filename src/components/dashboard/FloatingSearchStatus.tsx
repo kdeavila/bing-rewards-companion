@@ -44,7 +44,9 @@ export const FloatingSearchStatus: React.FC<FloatingSearchStatusProps> = ({
           p: 2,
           borderRadius: 3,
           zIndex: 1300,
-          border: "1px solid #dadce0",
+          border: "1px solid",
+          borderColor: "divider",
+          bgcolor: "background.paper",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.25 }}>
@@ -67,7 +69,7 @@ export const FloatingSearchStatus: React.FC<FloatingSearchStatusProps> = ({
         <LinearProgress
           variant="determinate"
           value={progress}
-          sx={{ height: 8, borderRadius: 4, mb: 1.5, bgcolor: "#e8eaed" }}
+          sx={{ height: 8, borderRadius: 4, mb: 1.5, bgcolor: "action.hover" }}
         />
 
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

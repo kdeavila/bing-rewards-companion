@@ -29,15 +29,13 @@ const getRandomCooldown = (mode: SearchMode) => {
 const generateRandomId = () => Math.random().toString(36).substring(2, 10);
 
 export const useSearchAutomation = (
-  topics: TrendingTopic[], 
-  onNeedMoreTopics?: () => Promise<void>
+  topics: TrendingTopic[]
 ) => {
   const [cooldown, setCooldown] = useState(0);
   const [dailyCount, setDailyCount] = useState(0);
   const [isAutoSearching, setIsAutoSearching] = useState(false);
   const [autoSearchIndex, setAutoSearchIndex] = useState(0);
   const [mode, setMode] = useState<SearchMode>('daily');
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const searchTabRef = useRef<SearchWindowHandle | null>(null);
 
   useEffect(() => {
@@ -60,7 +58,7 @@ export const useSearchAutomation = (
     }
   }, []);
 
-  const dailyGoal = GOALS[mode];
+  const dailyGoal = mode === 'bing_star' ? Math.max(GOALS.bing_star, topics.length) : GOALS.daily;
 
   const performSearch = useCallback((topic: string, index: number) => {
     const randomId = generateRandomId();
@@ -94,7 +92,7 @@ export const useSearchAutomation = (
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (cooldown > 0) {
       timer = setTimeout(() => setCooldown(prev => prev - 1), 1000);
-    } else if (isAutoSearching && cooldown === 0 && !isFetchingMore) {
+    } else if (isAutoSearching && cooldown === 0) {
       const nextIndex = autoSearchIndex + 1;
       
       if (dailyCount < dailyGoal) {
@@ -103,11 +101,6 @@ export const useSearchAutomation = (
           if (nextTopic) {
             performSearch(nextTopic.title, nextIndex);
           }
-        } else if (onNeedMoreTopics) {
-          setIsFetchingMore(true);
-          onNeedMoreTopics().finally(() => {
-            setIsFetchingMore(false);
-          });
         } else {
           setIsAutoSearching(false);
         }
@@ -123,12 +116,17 @@ export const useSearchAutomation = (
         clearTimeout(timer);
       }
     };
-  }, [cooldown, isAutoSearching, autoSearchIndex, topics, dailyCount, dailyGoal, onNeedMoreTopics, isFetchingMore, performSearch]);
+  }, [cooldown, isAutoSearching, autoSearchIndex, topics, dailyCount, dailyGoal, performSearch]);
 
   const startAutoSearch = () => {
     if (topics.length === 0) return;
     setIsAutoSearching(true);
-    const startIndex = dailyCount >= dailyGoal ? 0 : autoSearchIndex;
+
+    const nextBingStarIndex = dailyCount;
+    const startIndex = mode === 'bing_star'
+      ? nextBingStarIndex
+      : (dailyCount >= dailyGoal ? 0 : autoSearchIndex);
+
     const effectiveIndex = startIndex < topics.length ? startIndex : 0;
     
     const firstTopic = topics[effectiveIndex];

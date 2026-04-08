@@ -116,13 +116,16 @@ async function fetchHN(path: string): Promise<HNResponse> {
   return toHNResponse(rawData);
 }
 
-export async function fetchBingStarTopics(page: number = 0): Promise<TrendingTopic[]> {
+export async function fetchBingStarTopics(
+  page: number = 0,
+  limit: number = BING_STAR_LIMIT,
+): Promise<TrendingTopic[]> {
   try {
-    const data = await fetchHN(`search?tags=front_page&hitsPerPage=${BING_STAR_LIMIT}&page=${page}`);
+    const data = await fetchHN(`search?tags=front_page&hitsPerPage=${limit}&page=${page}`);
     return toTopics(data.hits);
   } catch (error) {
     console.error("Failed to fetch Bing Star topics:", error);
-    return BING_STAR_FALLBACK_TOPICS.slice(0, BING_STAR_LIMIT);
+    return BING_STAR_FALLBACK_TOPICS.slice(0, limit);
   }
 }
 

@@ -17,6 +17,7 @@ interface TopicsSectionProps {
   autoSearchIndex: number;
   cooldown: number;
   isMoreLoading: boolean;
+  canLoadMore: boolean;
   mode: SearchMode;
   onManualSearch: (topic: string) => void;
   onLoadMore: () => void;
@@ -29,6 +30,7 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({
   autoSearchIndex,
   cooldown,
   isMoreLoading,
+  canLoadMore,
   mode,
   onManualSearch,
   onLoadMore,
@@ -68,10 +70,14 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({
             variant="text"
             startIcon={isMoreLoading ? <CircularProgress size={20} /> : <AddIcon />}
             onClick={onLoadMore}
-            disabled={isMoreLoading || isAutoSearching}
+            disabled={isMoreLoading || isAutoSearching || !canLoadMore}
             sx={{ color: "text.secondary", fontWeight: 500 }}
           >
-            {isMoreLoading ? "Loading more topics..." : "Load 25 more topics"}
+            {isMoreLoading
+              ? "Loading more topics..."
+              : canLoadMore
+                ? "Load 15 more topics"
+                : "Extra topics already loaded"}
           </Button>
         </Box>
       )}

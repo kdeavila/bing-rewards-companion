@@ -32,10 +32,11 @@ export const TopicCard: React.FC<TopicCardProps> = ({
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
-        border: '1px solid #dadce0',
+        border: '1px solid',
+        borderColor: 'divider',
         transition: '0.2s',
         opacity: isCompleted ? 0.5 : 1,
-        bgcolor: isActive ? '#e8f0fe' : 'white'
+        bgcolor: isActive ? 'action.selected' : 'background.paper'
       }}
     >
       <CardContent sx={{ flexGrow: 1 }}>
