@@ -3,6 +3,9 @@ import { createTheme } from '@mui/material/styles';
 export type ThemeMode = 'light' | 'dark';
 
 export const googleTheme = createTheme({
+    cssVariables: {
+      colorSchemeSelector: 'data',
+    },
     colorSchemes: {
       light: {
         palette: {

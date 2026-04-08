@@ -19,8 +19,8 @@ const SearchDashboardContent: React.FC = () => {
   const { mode: colorMode, setMode, systemMode } = useColorScheme();
   const [showFloatingStatus, setShowFloatingStatus] = useState(false);
   const modeRef = useRef<SearchMode>("daily");
-  const themeMode: ThemeMode =
-    (colorMode === "system" ? systemMode : colorMode) === "light" ? "light" : "dark";
+  const effectiveMode = colorMode === "system" ? systemMode : colorMode;
+  const themeMode: ThemeMode = effectiveMode === "dark" ? "dark" : "light";
 
   const { topics, loading, isMoreLoading, canLoadMore, loadTopics } = useDashboardTopics(modeRef);
 
@@ -135,9 +135,8 @@ export const SearchDashboard: React.FC = () => {
   return (
     <ThemeProvider
       theme={googleTheme}
-      defaultMode="dark"
+      defaultMode="system"
       disableTransitionOnChange
-      noSsr
     >
       <CssBaseline enableColorScheme />
       <SearchDashboardContent />
