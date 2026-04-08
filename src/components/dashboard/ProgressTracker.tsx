@@ -1,6 +1,8 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import { Paper, Typography, LinearProgress } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 
 interface ProgressTrackerProps {
   dailyCount: number;

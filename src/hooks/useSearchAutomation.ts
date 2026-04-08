@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { TrendingTopic } from '../types';
 
 type SearchWindowHandle = {
@@ -62,7 +62,7 @@ export const useSearchAutomation = (
 
   const dailyGoal = GOALS[mode];
 
-  const performSearch = (topic: string, index: number) => {
+  const performSearch = useCallback((topic: string, index: number) => {
     const randomId = generateRandomId();
     // More complex URL parameters to simulate different entry points
     const form = mode === 'bing_star' ? 'PRAS01' : 'QBLH';
@@ -81,12 +81,14 @@ export const useSearchAutomation = (
 
     setCooldown(getRandomCooldown(mode));
     setAutoSearchIndex(index);
-    
-    const newCount = dailyCount + 1;
-    setDailyCount(newCount);
-    localStorage.setItem('bing_rewards_count', String(newCount));
+
+    setDailyCount((prevCount) => {
+      const newCount = prevCount + 1;
+      localStorage.setItem('bing_rewards_count', String(newCount));
+      return newCount;
+    });
     localStorage.setItem('bing_rewards_last_index', String(index));
-  };
+  }, [mode]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -121,7 +123,7 @@ export const useSearchAutomation = (
         clearTimeout(timer);
       }
     };
-  }, [cooldown, isAutoSearching, autoSearchIndex, topics, dailyCount, dailyGoal, onNeedMoreTopics, isFetchingMore, mode]);
+  }, [cooldown, isAutoSearching, autoSearchIndex, topics, dailyCount, dailyGoal, onNeedMoreTopics, isFetchingMore, performSearch]);
 
   const startAutoSearch = () => {
     if (topics.length === 0) return;

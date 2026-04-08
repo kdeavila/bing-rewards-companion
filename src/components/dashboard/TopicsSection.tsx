@@ -1,7 +1,9 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 
 import { TopicCard } from "./TopicCard";

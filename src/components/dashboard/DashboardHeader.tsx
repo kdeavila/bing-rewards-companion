@@ -1,5 +1,8 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Chip } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Chip from "@mui/material/Chip";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import TimerIcon from "@mui/icons-material/Timer";
 import TrophyIcon from "@mui/icons-material/EmojiEvents";
 

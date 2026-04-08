@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Container,
-  Box,
-  Alert,
-  ThemeProvider,
-} from "@mui/material";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import { ThemeProvider } from "@mui/material/styles";
 
 import { fetchTrendingTopics } from "../lib/api";
 import { googleTheme } from "../theme/google";
@@ -21,35 +19,36 @@ export const SearchDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
+  const pageRef = useRef(0);
 
-  const loadTopics = useCallback(
-    async (isLoadMore = false) => { 
+  const loadTopics = useCallback(async (isLoadMore = false) => {
+    if (isLoadMore) {
+      setIsMoreLoading(true);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      const nextPage = isLoadMore ? pageRef.current + 1 : 0;
+      const data = await fetchTrendingTopics(nextPage);
+
       if (isLoadMore) {
-        setIsMoreLoading(true);
+        setTopics((prev) => [...prev, ...data]);
       } else {
-        setLoading(true);
-        setPage(0);
+        setTopics(data);
       }
 
-      try {
-        const nextPage = isLoadMore ? page + 1 : 0;
-        const data = await fetchTrendingTopics(nextPage);
+      pageRef.current = nextPage;
+      setPage(nextPage);
+    } catch (error) {
+      console.error("Failed to load topics", error);
+    } finally {
+      setLoading(false);
+      setIsMoreLoading(false);
+    }
+  }, []);
 
-        if (isLoadMore) {
-          setTopics((prev) => [...prev, ...data]);
-          setPage(nextPage);
-        } else {
-          setTopics(data);
-        }
-      } catch (error) {
-        console.error("Failed to load topics", error);
-      } finally {
-        setLoading(false);
-        setIsMoreLoading(false);
-      }
-    },
-    [page],
-  );
+  const handleNeedMoreTopics = useCallback(() => loadTopics(true), [loadTopics]);
 
   const {
     cooldown,
@@ -63,11 +62,11 @@ export const SearchDashboard: React.FC = () => {
     handleManualSearch,
     switchMode,
     resetDaily,
-  } = useSearchAutomation(topics, useCallback(() => loadTopics(true), [loadTopics]));
+  } = useSearchAutomation(topics, handleNeedMoreTopics);
 
   useEffect(() => {
     void loadTopics();
-  }, []); // Initial load
+  }, [loadTopics]);
 
   return (
     <ThemeProvider theme={googleTheme}>

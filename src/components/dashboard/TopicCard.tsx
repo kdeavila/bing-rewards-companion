@@ -1,12 +1,10 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Divider,
-  Box,
-  IconButton,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import type { TrendingTopic } from "../../types";
 
