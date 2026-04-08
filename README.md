@@ -2,7 +2,7 @@
 
 Una app web para gestionar y ejecutar busquedas de Bing Rewards desde una interfaz limpia, rapida y enfocada en productividad.
 
-[!TIP]
+>[!TIP]
 Ideal para personas que quieren automatizar su rutina diaria sin perder control del progreso y del tiempo entre busquedas.
 
 Este proyecto esta pensado para dos tipos de personas:
@@ -21,7 +21,7 @@ Este proyecto esta pensado para dos tipos de personas:
 - Incluye contador, barra de progreso y cooldown entre busquedas.
 - Si haces mucho scroll y pierdes la cabecera, aparece un panel flotante con estado actual (progreso + tiempo + acceso rapido para volver arriba).
 
-[!IMPORTANT]
+>[!IMPORTANT]
 La app diferencia el flujo por modo para mantener coherencia entre el objetivo y la cantidad de topics mostrados.
 
 ---
@@ -40,7 +40,7 @@ La app diferencia el flujo por modo para mantener coherencia entre el objetivo y
 bun install
 ```
 
-[!NOTE]
+>[!NOTE]
 Recomendado usar la version estable mas reciente de Bun para evitar diferencias en lockfile y tooling.
 
 ### Desarrollo
@@ -61,7 +61,7 @@ bun run build
 bun run preview
 ```
 
-[!WARNING]
+>[!WARNING]
 Antes de usar automatizacion, revisa permisos del navegador para popups y valida el comportamiento en tu sesion de Bing.
 
 ---
@@ -75,7 +75,7 @@ API de referencia:
 
 - HN Algolia API: https://hn.algolia.com/api
 
-[!NOTE]
+>[!NOTE]
 `Bing Star` usa topics recientes desde HN Algolia, mientras `Daily Points` prioriza consistencia diaria.
 
 ---
