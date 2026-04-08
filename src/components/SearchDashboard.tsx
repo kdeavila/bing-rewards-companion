@@ -4,12 +4,13 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { ThemeProvider } from "@mui/material/styles";
 
-import { fetchTrendingTopics } from "../lib/api";
+import { fetchBingStarTopics, fetchDailyTopics } from "../lib/api";
 import { googleTheme } from "../theme/google";
 import { useSearchAutomation } from "../hooks/useSearchAutomation";
 import { ProgressTracker } from "./dashboard/ProgressTracker";
 import { DashboardHeader } from "./dashboard/DashboardHeader";
 import { DashboardActions } from "./dashboard/DashboardActions";
+import { FloatingSearchStatus } from "./dashboard/FloatingSearchStatus";
 import { TopicsSection } from "./dashboard/TopicsSection";
 import { HelpFab } from "./dashboard/HelpFab";
 import type { TrendingTopic } from "../types";
@@ -19,9 +20,15 @@ export const SearchDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
+  const [showFloatingStatus, setShowFloatingStatus] = useState(false);
   const pageRef = useRef(0);
+  const modeRef = useRef<"daily" | "bing_star">("daily");
 
   const loadTopics = useCallback(async (isLoadMore = false) => {
+    if (isLoadMore && modeRef.current !== "bing_star") {
+      return;
+    }
+
     if (isLoadMore) {
       setIsMoreLoading(true);
     } else {
@@ -30,9 +37,11 @@ export const SearchDashboard: React.FC = () => {
 
     try {
       const nextPage = isLoadMore ? pageRef.current + 1 : 0;
-      const data = await fetchTrendingTopics(nextPage);
+      const data = modeRef.current === "bing_star"
+        ? await fetchBingStarTopics(nextPage)
+        : await fetchDailyTopics();
 
-      if (isLoadMore) {
+      if (isLoadMore && modeRef.current === "bing_star") {
         setTopics((prev) => [...prev, ...data]);
       } else {
         setTopics(data);
@@ -65,8 +74,23 @@ export const SearchDashboard: React.FC = () => {
   } = useSearchAutomation(topics, handleNeedMoreTopics);
 
   useEffect(() => {
+    const onScroll = () => {
+      setShowFloatingStatus(globalThis.scrollY > 260);
+    };
+
+    onScroll();
+    globalThis.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      globalThis.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    modeRef.current = mode;
+    pageRef.current = 0;
+    setPage(0);
     void loadTopics();
-  }, [loadTopics]);
+  }, [mode, loadTopics]);
 
   return (
     <ThemeProvider theme={googleTheme}>
@@ -108,12 +132,25 @@ export const SearchDashboard: React.FC = () => {
             autoSearchIndex={autoSearchIndex}
             cooldown={cooldown}
             isMoreLoading={isMoreLoading}
+            mode={mode}
             onManualSearch={handleManualSearch}
             onLoadMore={() => {
               void loadTopics(true);
             }}
           />
         </Container>
+
+        <FloatingSearchStatus
+          open={showFloatingStatus}
+          dailyCount={dailyCount}
+          dailyGoal={dailyGoal}
+          cooldown={cooldown}
+          mode={mode}
+          isAutoSearching={isAutoSearching}
+          onBackToTop={() => {
+            globalThis.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
 
         <HelpFab />
       </Box>

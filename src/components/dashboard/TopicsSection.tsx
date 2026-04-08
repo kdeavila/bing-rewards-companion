@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 
 import { TopicCard } from "./TopicCard";
+import type { SearchMode } from "../../hooks/useSearchAutomation";
 import type { TrendingTopic } from "../../types";
 
 interface TopicsSectionProps {
@@ -16,6 +17,7 @@ interface TopicsSectionProps {
   autoSearchIndex: number;
   cooldown: number;
   isMoreLoading: boolean;
+  mode: SearchMode;
   onManualSearch: (topic: string) => void;
   onLoadMore: () => void;
 }
@@ -27,6 +29,7 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({
   autoSearchIndex,
   cooldown,
   isMoreLoading,
+  mode,
   onManualSearch,
   onLoadMore,
 }) => {
@@ -59,17 +62,19 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({
         ))}
       </Grid>
 
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-        <Button
-          variant="text"
-          startIcon={isMoreLoading ? <CircularProgress size={20} /> : <AddIcon />}
-          onClick={onLoadMore}
-          disabled={isMoreLoading || isAutoSearching}
-          sx={{ color: "text.secondary", fontWeight: 500 }}
-        >
-          {isMoreLoading ? "Loading more topics..." : "Load more searches"}
-        </Button>
-      </Box>
+      {mode === "bing_star" && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+          <Button
+            variant="text"
+            startIcon={isMoreLoading ? <CircularProgress size={20} /> : <AddIcon />}
+            onClick={onLoadMore}
+            disabled={isMoreLoading || isAutoSearching}
+            sx={{ color: "text.secondary", fontWeight: 500 }}
+          >
+            {isMoreLoading ? "Loading more topics..." : "Load 25 more topics"}
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };
