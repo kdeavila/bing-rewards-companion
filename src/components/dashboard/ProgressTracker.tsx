@@ -1,5 +1,6 @@
 import React from 'react';
-import { Paper, Box, Typography, LinearProgress } from '@mui/material';
+import Box from '@mui/material/Box';
+import { Paper, Typography, LinearProgress } from '@mui/material';
 
 interface ProgressTrackerProps {
   dailyCount: number;
@@ -11,7 +12,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ dailyCount, da
 
   return (
     <Paper elevation={0} sx={{ p: 3, mb: 4, border: '1px solid #dadce0', borderRadius: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="subtitle1" color="text.secondary">
           Daily Goal: {dailyCount} / {dailyGoal} searches
         </Typography>

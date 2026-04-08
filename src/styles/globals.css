@@ -1,6 +1,19 @@
-@import "tailwindcss";
-@layer base {
-  body {
-    @apply bg-slate-50 text-slate-900;
-  }
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  color: #202124;
 }

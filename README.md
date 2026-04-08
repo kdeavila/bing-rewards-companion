@@ -1,15 +1,33 @@
 # bing-rewards-companion
 
-To install dependencies:
+Dashboard para automatizar busquedas de Bing Rewards con una interfaz estilo Google usando Material UI.
+
+## Stack
+
+- Astro + React
+- Material UI (MUI) + Emotion
+- CSS global (sin Tailwind)
+
+## Instalar dependencias
 
 ```bash
 bun install
 ```
 
-To run:
+## Desarrollo
 
 ```bash
-bun run index.ts
+bun run dev
 ```
 
-This project was created using `bun init` in bun v1.3.6. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+## Build de produccion
+
+```bash
+bun run build
+```
+
+## Preview de produccion
+
+```bash
+bun run preview
+```

@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Tooltip, Fab } from "@mui/material";
+import Box from "@mui/material/Box";
+import { Tooltip, Fab } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 export const HelpFab: React.FC = () => {

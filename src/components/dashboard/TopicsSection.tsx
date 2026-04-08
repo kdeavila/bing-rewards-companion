@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -29,7 +30,7 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({
 }) => {
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" py={8}>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
         <CircularProgress />
       </Box>
     );
@@ -56,7 +57,7 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({
         ))}
       </Grid>
 
-      <Box display="flex" justifyContent="center" mt={6}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
         <Button
           variant="text"
           startIcon={isMoreLoading ? <CircularProgress size={20} /> : <AddIcon />}

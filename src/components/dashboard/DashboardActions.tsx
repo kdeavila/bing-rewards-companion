@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Button, ToggleButton, ToggleButtonGroup, Tooltip, IconButton } from "@mui/material";
+import Box from "@mui/material/Box";
+import { Button, ToggleButton, ToggleButtonGroup, Tooltip, IconButton } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PlayIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
@@ -33,8 +34,8 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
   onReset,
 }) => {
   return (
-    <Box display="flex" flexDirection="column" gap={3} mb={4} alignItems="center">
-      <Box display="flex" alignItems="center" gap={2}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mb: 4, alignItems: "center" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <ToggleButtonGroup
           value={mode}
           exclusive
@@ -51,7 +52,7 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
         </Tooltip>
       </Box>
 
-      <Box display="flex" gap={2} justifyContent="center" flexWrap="wrap">
+      <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
         {!isAutoSearching ? (
           <Button
             variant="contained"
