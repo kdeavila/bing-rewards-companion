@@ -15,6 +15,8 @@ interface FloatingSearchStatusProps {
   open: boolean;
   dailyCount: number;
   dailyGoal: number;
+  bingStarCount: number;
+  bingStarGoal: number;
   cooldown: number;
   mode: SearchMode;
   isAutoSearching: boolean;
@@ -25,12 +27,16 @@ export const FloatingSearchStatus: React.FC<FloatingSearchStatusProps> = ({
   open,
   dailyCount,
   dailyGoal,
+  bingStarCount,
+  bingStarGoal,
   cooldown,
   mode,
   isAutoSearching,
   onBackToTop,
 }) => {
-  const progress = Math.min((dailyCount / dailyGoal) * 100, 100);
+  const count = mode === 'bing_star' ? bingStarCount : dailyCount;
+  const goal = mode === 'bing_star' ? bingStarGoal : dailyGoal;
+  const progress = Math.min((count / goal) * 100, 100);
 
   return (
     <Slide direction="up" in={open} mountOnEnter unmountOnExit>

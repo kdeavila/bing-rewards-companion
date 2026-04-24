@@ -31,7 +31,11 @@ const SearchDashboardContent: React.FC = () => {
   const {
     cooldown,
     dailyCount,
+    bingStarCount,
     dailyGoal,
+    bingStarGoal,
+    currentCount,
+    currentGoal,
     isAutoSearching,
     autoSearchIndex,
     mode,
@@ -73,22 +77,27 @@ const SearchDashboardContent: React.FC = () => {
       />
 
       <Container maxWidth="md" sx={{ mt: 4, pb: 10 }}>
-        <ProgressTracker dailyCount={dailyCount} dailyGoal={dailyGoal} />
-
-        <DashboardActions
-          loading={loading}
-          cooldown={cooldown}
-          isAutoSearching={isAutoSearching}
-          hasTopics={topics.length > 0}
+        <ProgressTracker
+          dailyCount={dailyCount}
+          dailyGoal={dailyGoal}
+          bingStarCount={bingStarCount}
+          bingStarGoal={bingStarGoal}
           mode={mode}
-          onStartAutoSearch={startAutoSearch}
-          onStopAutoSearch={stopAutoSearch}
-          onRefreshTopics={() => {
-            void loadTopics(false);
-          }}
-          onSwitchMode={switchMode}
-          onReset={resetDaily}
         />
+
+<DashboardActions
+  loading={loading}
+  cooldown={cooldown}
+  isAutoSearching={isAutoSearching}
+  hasTopics={topics.length > 0}
+  onStartAutoSearch={startAutoSearch}
+  onStopAutoSearch={stopAutoSearch}
+  onRefreshTopics={() => {
+    void loadTopics(false);
+  }}
+  onSwitchMode={switchMode}
+  onReset={resetDaily}
+/>
 
         {isAutoSearching && (
           <Alert severity="info" sx={{ mb: 4, borderRadius: 3 }}>
@@ -118,6 +127,8 @@ const SearchDashboardContent: React.FC = () => {
         open={showFloatingStatus}
         dailyCount={dailyCount}
         dailyGoal={dailyGoal}
+        bingStarCount={bingStarCount}
+        bingStarGoal={bingStarGoal}
         cooldown={cooldown}
         mode={mode}
         isAutoSearching={isAutoSearching}

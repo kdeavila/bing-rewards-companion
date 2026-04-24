@@ -3,14 +3,27 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import type { SearchMode } from '../../hooks/useSearchAutomation';
 
 interface ProgressTrackerProps {
   dailyCount: number;
   dailyGoal: number;
+  bingStarCount: number;
+  bingStarGoal: number;
+  mode: SearchMode;
 }
 
-export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ dailyCount, dailyGoal }) => {
-  const progress = (dailyCount / dailyGoal) * 100;
+export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
+  dailyCount,
+  dailyGoal,
+  bingStarCount,
+  bingStarGoal,
+  mode,
+}) => {
+  const count = mode === 'bing_star' ? bingStarCount : dailyCount;
+  const goal = mode === 'bing_star' ? bingStarGoal : dailyGoal;
+  const progress = (count / goal) * 100;
+  const label = mode === 'bing_star' ? 'Bing Star Goal' : 'Daily Goal';
 
   return (
     <Paper
@@ -19,7 +32,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ dailyCount, da
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="subtitle1" color="text.secondary">
-          Daily Goal: {dailyCount} / {dailyGoal} searches
+          {label}: {count} / {goal} searches
         </Typography>
         <Typography variant="subtitle2" color={progress >= 100 ? "success.main" : "primary.main"}>
           {Math.round(progress)}% Complete

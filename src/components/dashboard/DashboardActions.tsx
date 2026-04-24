@@ -17,7 +17,6 @@ interface DashboardActionsProps {
   cooldown: number;
   isAutoSearching: boolean;
   hasTopics: boolean;
-  mode: SearchMode;
   onStartAutoSearch: () => void;
   onStopAutoSearch: () => void;
   onRefreshTopics: () => void;
@@ -40,13 +39,13 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mb: 4, alignItems: "center" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <ToggleButtonGroup
-          value={mode}
-          exclusive
-          onChange={(_, newMode) => newMode && onSwitchMode(newMode as SearchMode)}
-          disabled={isAutoSearching}
-          size="small"
-        >
+<ToggleButtonGroup
+  value={mode}
+  exclusive
+  onChange={(_, newMode) => newMode && onSwitchMode(newMode as SearchMode)}
+  disabled={isAutoSearching || loading}
+  size="small"
+  >
           <ToggleButton value="daily" sx={{ px: 3 }}>Daily Points (60pts)</ToggleButton>
           <ToggleButton value="bing_star" sx={{ px: 3 }}>Bing Star (Monthly Bonus)</ToggleButton>
         </ToggleButtonGroup>
@@ -58,27 +57,28 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
 
       <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
         {!isAutoSearching ? (
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={<PlayIcon />}
-            onClick={onStartAutoSearch}
-            disabled={loading || cooldown > 0 || !hasTopics}
-            sx={{ px: 4, borderRadius: 2 }}
-          >
-            Start {mode === 'daily' ? 'Daily' : 'Bing Star'} Automation
-          </Button>
+<Button
+  variant="contained"
+  size="large"
+  startIcon={<PlayIcon />}
+  onClick={onStartAutoSearch}
+  disabled={loading || cooldown > 0 || !hasTopics || isAutoSearching}
+  sx={{ px: 4, borderRadius: 2 }}
+  >
+  Start {mode === 'daily' ? 'Daily' : 'Bing Star'} Automation
+</Button>
         ) : (
-          <Button
-            variant="outlined"
-            size="large"
-            color="error"
-            startIcon={<StopIcon />}
-            onClick={onStopAutoSearch}
-            sx={{ px: 4, borderRadius: 2 }}
-          >
-            Stop Automation
-          </Button>
+<Button
+  variant="outlined"
+  size="large"
+  color="error"
+  startIcon={<StopIcon />}
+  onClick={onStopAutoSearch}
+  disabled={loading || !isAutoSearching}
+  sx={{ px: 4, borderRadius: 2 }}
+  >
+  Stop Automation
+</Button>
         )}
         
         <Button

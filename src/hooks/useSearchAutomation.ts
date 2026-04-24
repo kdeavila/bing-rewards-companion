@@ -11,14 +11,14 @@ type SearchWindowHandle = {
 export type SearchMode = 'daily' | 'bing_star';
 
 const GOALS = {
-  daily: 20,      // 60 points (3 pts per search)
-  bing_star: 25,  // ~75 points daily to reach monthly bonus goals safely
+  daily: 20, // 60 points (3 pts per search)
+  bing_star: 25, // ~75 points daily to reach monthly bonus goals safely
 };
 
 // Different cooldown profiles for "authentic" searches
 const COOLDOWNS = {
-  daily: { base: 8, variance: 4 },     // 4-12 seconds
-  bing_star: { base: 22, variance: 8 }  // 14-30 seconds (for "authentic" feel)
+  daily: { base: 8, variance: 4 }, // 4-12 seconds
+  bing_star: { base: 22, variance: 8 } // 14-30 seconds (for "authentic" feel)
 };
 
 const getRandomCooldown = (mode: SearchMode) => {
@@ -31,45 +31,55 @@ const generateRandomId = () => Math.random().toString(36).substring(2, 10);
 export const useSearchAutomation = (
   topics: TrendingTopic[]
 ) => {
-  const [cooldown, setCooldown] = useState(0);
+  const [cooldowns, setCooldowns] = useState<Record<SearchMode, number>>({ daily: 0, bing_star: 0 });
   const [dailyCount, setDailyCount] = useState(0);
-  const [isAutoSearching, setIsAutoSearching] = useState(false);
+  const [bingStarCount, setBingStarCount] = useState(0);
+  const [isAutoSearchingByMode, setIsAutoSearchingByMode] = useState<Record<SearchMode, boolean>>({ daily: false, bing_star: false });
   const [autoSearchIndex, setAutoSearchIndex] = useState(0);
   const [mode, setMode] = useState<SearchMode>('daily');
   const searchTabRef = useRef<SearchWindowHandle | null>(null);
 
   useEffect(() => {
-    const storedCount = localStorage.getItem('bing_rewards_count');
+    const storedDailyCount = localStorage.getItem('bing_rewards_daily_count');
+    const storedBingStarCount = localStorage.getItem('bing_rewards_bing_star_count');
     const storedDate = localStorage.getItem('bing_rewards_date');
     const lastIndex = localStorage.getItem('bing_rewards_last_index');
     const storedMode = localStorage.getItem('bing_rewards_mode') as SearchMode;
     const today = new Date().toDateString();
 
     if (storedDate === today) {
-      setDailyCount(Number(storedCount) || 0);
+      setDailyCount(Number(storedDailyCount) || 0);
+      setBingStarCount(Number(storedBingStarCount) || 0);
       setAutoSearchIndex(Number(lastIndex) || 0);
       if (storedMode) setMode(storedMode);
     } else {
       setDailyCount(0);
+      setBingStarCount(0);
       setAutoSearchIndex(0);
-      localStorage.setItem('bing_rewards_count', '0');
+      localStorage.setItem('bing_rewards_daily_count', '0');
+      localStorage.setItem('bing_rewards_bing_star_count', '0');
       localStorage.setItem('bing_rewards_date', today);
       localStorage.setItem('bing_rewards_last_index', '0');
     }
   }, []);
 
-  const dailyGoal = mode === 'bing_star' ? Math.max(GOALS.bing_star, topics.length) : GOALS.daily;
+  const dailyGoal = GOALS.daily;
+  const bingStarGoal = GOALS.bing_star;
+  const currentCount = mode === 'bing_star' ? bingStarCount : dailyCount;
+  const currentGoal = mode === 'bing_star' ? bingStarGoal : dailyGoal;
+  const cooldown = cooldowns[mode];
+  const isAutoSearching = isAutoSearchingByMode[mode];
 
   const performSearch = useCallback((topic: string, index: number) => {
     const randomId = generateRandomId();
     // More complex URL parameters to simulate different entry points
     const form = mode === 'bing_star' ? 'PRAS01' : 'QBLH';
     const url = `https://www.bing.com/search?q=${encodeURIComponent(topic)}&form=${form}&cvid=${randomId}&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRg70gEINTI0NmowajSoAgCwAgA&FORM=ANNTA1&PC=U531`;
-    
+
     const popupOpen = (globalThis as {
       open?: (url?: string, target?: string) => SearchWindowHandle | null;
     }).open;
-    
+
     if (!searchTabRef.current || searchTabRef.current.closed) {
       searchTabRef.current = popupOpen?.(url, 'rewards_search_tab') ?? null;
     } else {
@@ -77,35 +87,43 @@ export const useSearchAutomation = (
       searchTabRef.current.focus();
     }
 
-    setCooldown(getRandomCooldown(mode));
+    setCooldowns(prev => ({ ...prev, [mode]: getRandomCooldown(mode) }));
     setAutoSearchIndex(index);
 
-    setDailyCount((prevCount) => {
-      const newCount = prevCount + 1;
-      localStorage.setItem('bing_rewards_count', String(newCount));
-      return newCount;
-    });
+    if (mode === 'bing_star') {
+      setBingStarCount((prevCount) => {
+        const newCount = prevCount + 1;
+        localStorage.setItem('bing_rewards_bing_star_count', String(newCount));
+        return newCount;
+      });
+    } else {
+      setDailyCount((prevCount) => {
+        const newCount = prevCount + 1;
+        localStorage.setItem('bing_rewards_daily_count', String(newCount));
+        return newCount;
+      });
+    }
     localStorage.setItem('bing_rewards_last_index', String(index));
   }, [mode]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (cooldown > 0) {
-      timer = setTimeout(() => setCooldown(prev => prev - 1), 1000);
+      timer = setTimeout(() => setCooldowns(prev => ({ ...prev, [mode]: (prev[mode] ?? 0) - 1 })), 1000);
     } else if (isAutoSearching && cooldown === 0) {
       const nextIndex = autoSearchIndex + 1;
-      
-      if (dailyCount < dailyGoal) {
+
+      if (currentCount < currentGoal) {
         if (nextIndex < topics.length) {
           const nextTopic = topics[nextIndex];
           if (nextTopic) {
             performSearch(nextTopic.title, nextIndex);
           }
         } else {
-          setIsAutoSearching(false);
+          setIsAutoSearchingByMode(prev => ({ ...prev, [mode]: false }));
         }
       } else {
-        setIsAutoSearching(false);
+        setIsAutoSearchingByMode(prev => ({ ...prev, [mode]: false }));
         if (searchTabRef.current && !searchTabRef.current.closed) {
           searchTabRef.current.close();
         }
@@ -116,29 +134,25 @@ export const useSearchAutomation = (
         clearTimeout(timer);
       }
     };
-  }, [cooldown, isAutoSearching, autoSearchIndex, topics, dailyCount, dailyGoal, performSearch]);
+  }, [cooldown, isAutoSearching, autoSearchIndex, topics, currentCount, currentGoal, performSearch]);
 
   const startAutoSearch = () => {
     if (topics.length === 0) return;
-    setIsAutoSearching(true);
+    setIsAutoSearchingByMode(prev => ({ ...prev, [mode]: true }));
 
-    const nextBingStarIndex = dailyCount;
-    const startIndex = mode === 'bing_star'
-      ? nextBingStarIndex
-      : (dailyCount >= dailyGoal ? 0 : autoSearchIndex);
-
+    const startIndex = currentCount >= currentGoal ? 0 : currentCount;
     const effectiveIndex = startIndex < topics.length ? startIndex : 0;
-    
+
     const firstTopic = topics[effectiveIndex];
     if (firstTopic) {
       performSearch(firstTopic.title, effectiveIndex);
     } else {
-      setIsAutoSearching(false);
+      setIsAutoSearchingByMode(prev => ({ ...prev, [mode]: false }));
     }
   };
 
   const stopAutoSearch = () => {
-    setIsAutoSearching(false);
+    setIsAutoSearchingByMode(prev => ({ ...prev, [mode]: false }));
     if (searchTabRef.current && !searchTabRef.current.closed) {
       searchTabRef.current.close();
     }
@@ -151,21 +165,37 @@ export const useSearchAutomation = (
   };
 
   const switchMode = (newMode: SearchMode) => {
+    if (newMode === mode) return;
+    // Stop the current mode's auto-search when switching
+    setIsAutoSearchingByMode(prev => ({ ...prev, [mode]: false }));
+    setCooldowns(prev => ({ ...prev, [mode]: 0 }));
+    if (searchTabRef.current && !searchTabRef.current.closed) {
+      searchTabRef.current.close();
+    }
     setMode(newMode);
     localStorage.setItem('bing_rewards_mode', newMode);
   };
 
   const resetDaily = () => {
-    setDailyCount(0);
+    if (mode === 'bing_star') {
+      setBingStarCount(0);
+      localStorage.setItem('bing_rewards_bing_star_count', '0');
+    } else {
+      setDailyCount(0);
+      localStorage.setItem('bing_rewards_daily_count', '0');
+    }
     setAutoSearchIndex(0);
-    localStorage.setItem('bing_rewards_count', '0');
     localStorage.setItem('bing_rewards_last_index', '0');
   };
 
   return {
     cooldown,
     dailyCount,
+    bingStarCount,
     dailyGoal,
+    bingStarGoal,
+    currentCount,
+    currentGoal,
     isAutoSearching,
     autoSearchIndex,
     mode,
@@ -173,6 +203,6 @@ export const useSearchAutomation = (
     stopAutoSearch,
     handleManualSearch,
     switchMode,
-    resetDaily
+    resetDaily,
   };
 };
