@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
@@ -22,8 +22,8 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 }) => {
   const count = mode === 'bing_star' ? bingStarCount : dailyCount;
   const goal = mode === 'bing_star' ? bingStarGoal : dailyGoal;
-  const progress = (count / goal) * 100;
-  const label = mode === 'bing_star' ? 'Bing Star Goal' : 'Daily Goal';
+  const progress = useMemo(() => Math.min((count / goal) * 100, 100), [count, goal]);
+  const label = useMemo(() => mode === 'bing_star' ? 'Bing Star Goal' : 'Daily Goal', [mode]);
 
   return (
     <Paper

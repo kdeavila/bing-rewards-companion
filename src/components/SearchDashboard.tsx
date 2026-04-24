@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -24,9 +24,9 @@ const SearchDashboardContent: React.FC = () => {
 
   const { topics, loading, isMoreLoading, canLoadMore, loadTopics } = useDashboardTopics(modeRef);
 
-  const toggleThemeMode = useCallback(() => {
+  const toggleThemeMode = () => {
     setMode(themeMode === "dark" ? "light" : "dark");
-  }, [setMode, themeMode]);
+  };
 
   const {
     cooldown,
@@ -90,6 +90,7 @@ const SearchDashboardContent: React.FC = () => {
   cooldown={cooldown}
   isAutoSearching={isAutoSearching}
   hasTopics={topics.length > 0}
+  mode={mode}
   onStartAutoSearch={startAutoSearch}
   onStopAutoSearch={stopAutoSearch}
   onRefreshTopics={() => {

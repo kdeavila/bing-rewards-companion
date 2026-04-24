@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
@@ -17,6 +17,7 @@ interface DashboardActionsProps {
   cooldown: number;
   isAutoSearching: boolean;
   hasTopics: boolean;
+  mode: SearchMode;
   onStartAutoSearch: () => void;
   onStopAutoSearch: () => void;
   onRefreshTopics: () => void;
@@ -36,18 +37,58 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
   onSwitchMode,
   onReset,
 }) => {
+  const handleStartAutoSearch = () => {
+    onStartAutoSearch();
+  };
+
+  const handleStopAutoSearch = () => {
+    onStopAutoSearch();
+  };
+  
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mb: 4, alignItems: "center" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-<ToggleButtonGroup
-  value={mode}
-  exclusive
-  onChange={(_, newMode) => newMode && onSwitchMode(newMode as SearchMode)}
-  disabled={isAutoSearching || loading}
-  size="small"
-  >
-          <ToggleButton value="daily" sx={{ px: 3 }}>Daily Points (60pts)</ToggleButton>
-          <ToggleButton value="bing_star" sx={{ px: 3 }}>Bing Star (Monthly Bonus)</ToggleButton>
+        <ToggleButtonGroup
+          value={mode}
+          exclusive
+          onChange={(_, newMode) => newMode && onSwitchMode(newMode as SearchMode)}
+          disabled={isAutoSearching || loading}
+          size="small"
+        >
+          <ToggleButton
+            value="daily"
+            sx={{
+              px: 3,
+              bgcolor: mode === 'daily' ? 'primary.main' : 'background.paper',
+              color: mode === 'daily' ? 'primary.contrastText' : 'text.primary',
+              '&.Mui-selected': {
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+              },
+              '&:hover': {
+                bgcolor: mode === 'daily' ? 'primary.dark' : 'action.hover',
+              },
+            }}
+          >
+            Daily Points (60pts)
+          </ToggleButton>
+          <ToggleButton
+            value="bing_star"
+            sx={{
+              px: 3,
+              bgcolor: mode === 'bing_star' ? 'secondary.main' : 'background.paper',
+              color: mode === 'bing_star' ? 'secondary.contrastText' : 'text.primary',
+              '&.Mui-selected': {
+                bgcolor: 'secondary.main',
+                color: 'secondary.contrastText',
+              },
+              '&:hover': {
+                bgcolor: mode === 'bing_star' ? 'secondary.dark' : 'action.hover',
+              },
+            }}
+          >
+            Bing Star (Monthly Bonus)
+          </ToggleButton>
         </ToggleButtonGroup>
         
         <Tooltip title={mode === 'daily' ? "Standard search for daily points (60pts goal)." : "Slow, authentic searches to help reach the 2100 monthly bonus goal."}>
@@ -57,30 +98,30 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
 
       <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
         {!isAutoSearching ? (
-<Button
-  variant="contained"
-  size="large"
-  startIcon={<PlayIcon />}
-  onClick={onStartAutoSearch}
-  disabled={loading || cooldown > 0 || !hasTopics || isAutoSearching}
-  sx={{ px: 4, borderRadius: 2 }}
-  >
-  Start {mode === 'daily' ? 'Daily' : 'Bing Star'} Automation
-</Button>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<PlayIcon />}
+            onClick={handleStartAutoSearch}
+            disabled={loading || cooldown > 0 || !hasTopics || isAutoSearching}
+            sx={{ px: 4, borderRadius: 2 }}
+          >
+            Start {mode === 'daily' ? 'Daily' : 'Bing Star'} Automation
+          </Button>
         ) : (
-<Button
-  variant="outlined"
-  size="large"
-  color="error"
-  startIcon={<StopIcon />}
-  onClick={onStopAutoSearch}
-  disabled={loading || !isAutoSearching}
-  sx={{ px: 4, borderRadius: 2 }}
-  >
-  Stop Automation
-</Button>
+          <Button
+            variant="outlined"
+            size="large"
+            color="error"
+            startIcon={<StopIcon />}
+            onClick={handleStopAutoSearch}
+            disabled={loading || !isAutoSearching}
+            sx={{ px: 4, borderRadius: 2 }}
+          >
+            Stop Automation
+          </Button>
         )}
-        
+
         <Button
           variant="outlined"
           size="large"
@@ -93,8 +134,8 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
         </Button>
 
         <Tooltip title="Reset daily progress">
-          <IconButton 
-            onClick={onReset} 
+          <IconButton
+            onClick={onReset}
             disabled={isAutoSearching}
             color="warning"
           >

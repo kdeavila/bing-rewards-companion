@@ -76,16 +76,21 @@ export const useSearchAutomation = (
     const form = mode === 'bing_star' ? 'PRAS01' : 'QBLH';
     const url = `https://www.bing.com/search?q=${encodeURIComponent(topic)}&form=${form}&cvid=${randomId}&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRg70gEINTI0NmowajSoAgCwAgA&FORM=ANNTA1&PC=U531`;
 
-    const popupOpen = (globalThis as {
-      open?: (url?: string, target?: string) => SearchWindowHandle | null;
-    }).open;
-
-    if (!searchTabRef.current || searchTabRef.current.closed) {
-      searchTabRef.current = popupOpen?.(url, 'rewards_search_tab') ?? null;
-    } else {
-      searchTabRef.current.location.href = url;
-      searchTabRef.current.focus();
+  const openPopup = (url: string, target: string) => {
+    const win = window.open(url, target);
+    if (win) {
+      win.focus();
+      return win;
     }
+    return null;
+  };
+
+  if (!searchTabRef.current || searchTabRef.current.closed) {
+    searchTabRef.current = openPopup(url, 'rewards_search_tab');
+  } else {
+    searchTabRef.current.location.href = url;
+    searchTabRef.current.focus();
+  }
 
     setCooldowns(prev => ({ ...prev, [mode]: getRandomCooldown(mode) }));
     setAutoSearchIndex(index);

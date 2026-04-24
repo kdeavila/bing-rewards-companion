@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
@@ -36,7 +36,7 @@ export const FloatingSearchStatus: React.FC<FloatingSearchStatusProps> = ({
 }) => {
   const count = mode === 'bing_star' ? bingStarCount : dailyCount;
   const goal = mode === 'bing_star' ? bingStarGoal : dailyGoal;
-  const progress = Math.min((count / goal) * 100, 100);
+  const progress = useMemo(() => Math.min((count / goal) * 100, 100), [count, goal]);
 
   return (
     <Slide direction="up" in={open} mountOnEnter unmountOnExit>
