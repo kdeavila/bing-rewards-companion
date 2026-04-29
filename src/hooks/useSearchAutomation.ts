@@ -17,7 +17,7 @@ const GOALS = {
 
 // Different cooldown profiles for "authentic" searches
 const COOLDOWNS = {
-  daily: { base: 8, variance: 4 }, // 4-12 seconds
+  daily: { base: 13, variance: 3 }, // 10-16 seconds
   bing_star: { base: 22, variance: 8 } // 14-30 seconds (for "authentic" feel)
 };
 
